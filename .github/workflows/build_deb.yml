@@ -74,12 +74,12 @@ jobs:
           # Crear una release sin tag
           curl -X POST \
             -H "Authorization: token ${{ secrets.SSP_TOKEN }}" \
-            -d '{"tag_name": "latest", "name": "Release latest", "body": "New .deb package release", "draft": false, "prerelease": false}' \
+            -d '{"tag_name": "latest", "name": "Release latest", "body": "## Nueva versión de paquete .deb\n\n### Cambios importantes:\n\n- Se ha mejorado el rendimiento.\n- Se corrigieron algunos errores.\n\n![Imagen del cambio](https://path/to/your/image.png)\n\nGracias por usar el paquete! 😄\n\nMás detalles sobre el proyecto en [enlace a tu documentación](https://github.com/tu-usuario/tu-repo)"}' \
             https://api.github.com/repos/${{ github.repository }}/releases
 
-      - name: Upload only .deb to GitHub Release
+      - name: Upload to GitHub Release
         run: |
-          # Subir el archivo .deb a la release creada (asegurándonos de que solo subimos ese archivo)
+          # Subir el archivo .deb a la release creada
           curl -X POST \
             -H "Authorization: token ${{ secrets.SSP_TOKEN }}" \
             -H "Content-Type: application/octet-stream" \
