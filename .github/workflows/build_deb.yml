@@ -33,3 +33,4 @@ jobs:
           files: ssp-${{ github.ref_name }}.deb
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SSP_TOKEN: ${{ secrets.SSP_TOKEN }}
