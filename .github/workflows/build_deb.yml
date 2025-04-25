@@ -1,0 +1,35 @@
+name: Build and publish .deb package
+
+on:
+  push:
+    tags: ['v*']  # Solo en tags como v1.0.0
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y dpkg-dev
+
+      - name: Set permissions
+        run: |
+          chmod 0775 ssp/DEBIAN/prerm
+          chmod +x ssp/usr/local/sbin/ssp
+
+      - name: Build .deb package
+        run: |
+          dpkg-deb --build ssp
+          mv ssp.deb ssp-${{ github.ref_name }}.deb
+
+      - name: Upload to GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ssp-${{ github.ref_name }}.deb
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

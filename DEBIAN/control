@@ -1,0 +1,8 @@
+Package: Secure_Service_Protocol
+Version: 1.0
+Section: utils
+Priority: optional
+Architecture: all
+Maintainer: Andres Ruslan Abadias Otal
+Description: Administrador de servicios del sistema "ssp -h".
+Depends: bash

@@ -1,0 +1,3 @@
+#!/bin/bash
+systemctl stop ssp.service
+systemctl disable ssp.service

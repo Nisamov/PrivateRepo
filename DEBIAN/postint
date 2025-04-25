@@ -1,0 +1,5 @@
+#!/bin/bash
+systemctl daemon-reexec
+systemctl daemon-reload
+systemctl enable ssp.service
+systemctl start ssp.service
