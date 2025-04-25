@@ -41,8 +41,9 @@ jobs:
 
       - name: Build .deb package
         run: |
-          dpkg-deb --build .
-          mv *.deb ssp-${{ github.event.inputs.version }}.deb
+          mv PrivateRepo private-repo  # Renombra el directorio si es necesario
+          dpkg-deb --build private-repo  # Asegúrate de usar el nombre correcto del directorio
+          mv private-repo.deb ssp-${{ github.event.inputs.version }}.deb  # Renombra el paquete
 
       - name: Upload to GitHub Release
         uses: softprops/action-gh-release@v1
