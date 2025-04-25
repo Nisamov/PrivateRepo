@@ -69,9 +69,19 @@ jobs:
           git config --global user.name "GitHub Actions"
           git remote set-url origin https://x-access-token:${{ secrets.SSP_TOKEN }}@github.com/${{ github.repository }}.git
 
+      - name: Create GitHub Release without a tag
+        run: |
+          # Crear una release sin tag
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.SSP_TOKEN }}" \
+            -d '{"tag_name": "latest", "name": "Release latest", "body": "New .deb package release", "draft": false, "prerelease": false}' \
+            https://api.github.com/repos/${{ github.repository }}/releases
+
       - name: Upload to GitHub Release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: ssp-package.deb  # Sube el archivo .deb generado
-        env:
-          GITHUB_TOKEN: ${{ secrets.SSP_TOKEN }}
+        run: |
+          # Subir el archivo .deb a la release creada
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.SSP_TOKEN }}" \
+            -H "Content-Type: application/octet-stream" \
+            --data-binary @ssp-package.deb \
+            "https://uploads.github.com/repos/${{ github.repository }}/releases/latest/assets?name=ssp-package.deb"
