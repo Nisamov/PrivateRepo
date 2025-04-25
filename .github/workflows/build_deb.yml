@@ -62,12 +62,11 @@ jobs:
         run: |
           # Construye el paquete .deb desde el directorio creado
           dpkg-deb --build package
-          mv package.deb ssp-${{ github.event.inputs.version }}.deb  # Renombra el paquete
 
       - name: Upload to GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          files: ssp-${{ github.event.inputs.version }}.deb
+          files: package.deb  # No renombramos el archivo, se sube tal cual
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SSP_TOKEN: ${{ secrets.SSP_TOKEN }}
