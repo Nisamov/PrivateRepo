@@ -65,10 +65,15 @@ jobs:
 
       - name: Build .deb package
         run: |
-          # Asegúrate de usar un nombre válido para el paquete
           VERSION=${{ github.event.inputs.version }} # Obtén la versión desde la entrada
           PACKAGE_NAME="ssp-${VERSION,,}" # Convierte a minúsculas y asegúrate de que el nombre sea válido
           dpkg-deb --build package $PACKAGE_NAME.deb  # Construye el paquete .deb usando un nombre válido
+
+      - name: Set up Git authentication
+        run: |
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
 
       - name: Create Git tag
         run: |
