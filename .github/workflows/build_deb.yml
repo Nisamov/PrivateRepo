@@ -47,16 +47,16 @@ jobs:
       - name: Create directory structure for .deb
         run: |
           # Crea la estructura de directorios necesaria para el paquete .deb
-          mkdir -p debian-package/DEBIAN
-          mkdir -p debian-package/usr/local/sbin
-          mkdir -p debian-package/etc/ssp
-          mkdir -p debian-package/lib/systemd/system
+          mkdir -p package/DEBIAN
+          mkdir -p package/usr/local/sbin
+          mkdir -p package/etc/ssp
+          mkdir -p package/lib/systemd/system
 
           # Copia los archivos al directorio correcto
-          cp -r DEBIAN/* debian-package/DEBIAN/
-          cp -r usr/local/sbin/* debian-package/usr/local/sbin/
-          cp -r etc/ssp/* debian-package/etc/ssp/
-          cp -r lib/systemd/* debian-package/lib/systemd/system/
+          cp -r DEBIAN/* package/DEBIAN/
+          cp -r usr/local/sbin/* package/usr/local/sbin/
+          cp -r etc/ssp/* package/etc/ssp/
+          cp -r lib/systemd/* package/lib/systemd/system/
 
       - name: List files before creating directory for .deb second time
         run: |
@@ -65,13 +65,20 @@ jobs:
 
       - name: Build .deb package
         run: |
-          # Construye el paquete .deb desde el directorio creado
-          dpkg-deb --build debian-package
+          # Asegúrate de usar un nombre válido para el paquete
+          VERSION=${{ github.event.inputs.version }} # Obtén la versión desde la entrada
+          PACKAGE_NAME="ssp-${VERSION,,}" # Convierte a minúsculas y asegúrate de que el nombre sea válido
+          dpkg-deb --build package $PACKAGE_NAME.deb  # Construye el paquete .deb usando un nombre válido
+
+      - name: Create Git tag
+        run: |
+          VERSION=${{ github.event.inputs.version }}
+          git tag "v${VERSION}"
+          git push origin "v${VERSION}"
 
       - name: Upload to GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          files: debian-package.deb  # No renombramos el archivo, se sube tal cual
+          files: ssp-${{ github.event.inputs.version }}.deb  # Sube el archivo .deb generado
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SSP_TOKEN: ${{ secrets.SSP_TOKEN }}
