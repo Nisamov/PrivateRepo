@@ -1,4 +1,4 @@
-Package: Secure_Service_Protocol
+Package: secure-service-protocol
 Version: 1.0
 Section: utils
 Priority: optional
