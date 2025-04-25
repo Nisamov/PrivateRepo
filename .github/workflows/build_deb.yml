@@ -1,8 +1,13 @@
 name: Build and publish .deb package
 
 on:
-  push:
-    tags: ['v*']  # Solo en tags como v1.0.0
+  # Permite ejecutar el workflow manualmente
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version for the .deb package'
+        required: true
+        default: '1.0.0'
 
 jobs:
   build:
@@ -25,12 +30,12 @@ jobs:
       - name: Build .deb package
         run: |
           dpkg-deb --build ssp
-          mv ssp.deb ssp-${{ github.ref_name }}.deb
+          mv ssp.deb ssp-${{ github.event.inputs.version }}.deb
 
       - name: Upload to GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          files: ssp-${{ github.ref_name }}.deb
+          files: ssp-${{ github.event.inputs.version }}.deb
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SSP_TOKEN: ${{ secrets.SSP_TOKEN }}
