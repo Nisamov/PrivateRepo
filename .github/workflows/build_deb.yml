@@ -3,11 +3,6 @@ name: Build and publish .deb package
 on:
   # Permite ejecutar el workflow manualmente
   workflow_dispatch:
-    inputs:
-      version:
-        description: 'Version for the .deb package'
-        required: true
-        default: '1.0.0'
 
 jobs:
   build:
@@ -65,9 +60,8 @@ jobs:
 
       - name: Build .deb package
         run: |
-          VERSION=${{ github.event.inputs.version }} # Obtén la versión desde la entrada
-          PACKAGE_NAME="ssp-${VERSION,,}" # Convierte a minúsculas y asegúrate de que el nombre sea válido
-          dpkg-deb --build package $PACKAGE_NAME.deb  # Construye el paquete .deb usando un nombre válido
+          # Aquí ya no necesitamos la versión ni crear tags
+          dpkg-deb --build package ssp-package.deb  # Construye el paquete .deb usando un nombre fijo
 
       - name: Set up Git authentication
         run: |
@@ -75,15 +69,9 @@ jobs:
           git config --global user.name "GitHub Actions"
           git remote set-url origin https://x-access-token:${{ secrets.SSP_TOKEN }}@github.com/${{ github.repository }}.git
 
-      - name: Create Git tag
-        run: |
-          VERSION=${{ github.event.inputs.version }}
-          git tag "v${VERSION}"
-          git push origin "v${VERSION}"
-
       - name: Upload to GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          files: ssp-${{ github.event.inputs.version }}.deb  # Sube el archivo .deb generado
+          files: ssp-package.deb  # Sube el archivo .deb generado
         env:
           GITHUB_TOKEN: ${{ secrets.SSP_TOKEN }}
