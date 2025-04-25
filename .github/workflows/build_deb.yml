@@ -39,16 +39,30 @@ jobs:
           chmod 0775 ./DEBIAN/prerm
           chmod +x ./usr/local/sbin/ssp
 
-      - name: List files before renaming the directory
+      - name: List files before creating directory for .deb
         run: |
-          echo "Listing files in the current directory before renaming:"
+          echo "Listing files in the current directory before creating .deb directory:"
           ls -al
+
+      - name: Create directory structure for .deb
+        run: |
+          # Crea la estructura de directorios necesaria para el paquete .deb
+          mkdir -p package/DEBIAN
+          mkdir -p package/usr/local/sbin
+          mkdir -p package/etc/ssp
+          mkdir -p package/lib/systemd/system
+
+          # Copia los archivos al directorio correcto
+          cp -r DEBIAN/* package/DEBIAN/
+          cp -r usr/local/sbin/* package/usr/local/sbin/
+          cp -r etc/ssp/* package/etc/ssp/
+          cp -r lib/systemd/* package/lib/systemd/system/
 
       - name: Build .deb package
         run: |
-          mv PrivateRepo private-repo  # Renombra el directorio si es necesario
-          dpkg-deb --build private-repo  # Asegúrate de usar el nombre correcto del directorio
-          mv private-repo.deb ssp-${{ github.event.inputs.version }}.deb  # Renombra el paquete
+          # Construye el paquete .deb desde el directorio creado
+          dpkg-deb --build package
+          mv package.deb ssp-${{ github.event.inputs.version }}.deb  # Renombra el paquete
 
       - name: Upload to GitHub Release
         uses: softprops/action-gh-release@v1
