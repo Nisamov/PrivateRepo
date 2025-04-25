@@ -47,26 +47,31 @@ jobs:
       - name: Create directory structure for .deb
         run: |
           # Crea la estructura de directorios necesaria para el paquete .deb
-          mkdir -p package/DEBIAN
-          mkdir -p package/usr/local/sbin
-          mkdir -p package/etc/ssp
-          mkdir -p package/lib/systemd/system
+          mkdir -p debian-package/DEBIAN
+          mkdir -p debian-package/usr/local/sbin
+          mkdir -p debian-package/etc/ssp
+          mkdir -p debian-package/lib/systemd/system
 
           # Copia los archivos al directorio correcto
-          cp -r DEBIAN/* package/DEBIAN/
-          cp -r usr/local/sbin/* package/usr/local/sbin/
-          cp -r etc/ssp/* package/etc/ssp/
-          cp -r lib/systemd/* package/lib/systemd/system/
+          cp -r DEBIAN/* debian-package/DEBIAN/
+          cp -r usr/local/sbin/* debian-package/usr/local/sbin/
+          cp -r etc/ssp/* debian-package/etc/ssp/
+          cp -r lib/systemd/* debian-package/lib/systemd/system/
+
+      - name: List files before creating directory for .deb second time
+        run: |
+          echo "Listing files in the current directory before creating .deb directory:"
+          ls -al
 
       - name: Build .deb package
         run: |
           # Construye el paquete .deb desde el directorio creado
-          dpkg-deb --build package
+          dpkg-deb --build debian-package
 
       - name: Upload to GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          files: package.deb  # No renombramos el archivo, se sube tal cual
+          files: debian-package.deb  # No renombramos el archivo, se sube tal cual
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SSP_TOKEN: ${{ secrets.SSP_TOKEN }}
